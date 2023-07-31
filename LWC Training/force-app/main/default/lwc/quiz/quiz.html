@@ -1,0 +1,41 @@
+<template>
+  <lightning-card title="Quiz">
+    <form
+      class="slds-p-around_medium questions-wrapper"
+      onsubmit={onSubmitAnswers}
+    >
+      <template
+        for:each={questions}
+        for:item="currentQuestion"
+        for:index="questionIndex"
+      >
+        <article key={currentQuestion.id} class="slds-m-vertical_medium">
+          <lightning-combobox
+            class="question"
+            data-question={currentQuestion.id}
+            label={currentQuestion.question}
+            placeholder="Select an answer"
+            options={currentQuestion.answers}
+            onchange={onSelectAnswer}
+            required
+          ></lightning-combobox>
+          <p lwc:if={isQuizUnsubmitted}></p>
+          <p
+            lwc:elseif={currentQuestion.isAnswerWrong}
+            class="slds-text-color_error"
+          >
+            The right answer is {currentQuestion.rightAnswer}
+          </p>
+        </article>
+      </template>
+      <div class="slds-m-top_large">
+        <lightning-button
+          disabled={isSomeQuestionUnaswered}
+          label="Submit"
+          type="submit"
+          variant="brand"
+        ></lightning-button>
+      </div>
+    </form>
+  </lightning-card>
+</template>
