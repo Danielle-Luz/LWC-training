@@ -1,5 +1,6 @@
 import { LightningElement, track } from "lwc";
 import { loadStyle } from "lightning/platformResourceLoader";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import fontAwesomeLibrary from "@salesforce/resourceUrl/fontAwesomeLibrary";
 
 export default class MemoryGame extends LightningElement {
@@ -17,6 +18,9 @@ export default class MemoryGame extends LightningElement {
 
   coupleOfSelectedBoardPieces = [];
   isBoardPieceCoupleTurnedUp = false;
+  rightCouplesCount = 0;
+
+  RIGHT_COUPLES_LIMIT = 8;
 
   connectedCallback() {
     this.loadLibraries();
@@ -64,25 +68,48 @@ export default class MemoryGame extends LightningElement {
     const boardPiece = event.target;
 
     this.addSelectedBoardPiece(boardPiece);
+
     await this.compareSelectedBoardPieces();
-    this.cleanSelectedBoardPieces();
+
+    this.cleanCoupleBoardPieces();
+
+    this.showCongratulationsToast();
   }
 
   async compareSelectedBoardPieces() {
-    if (
-      this.wereTwoBoardPiecesSelected() &&
-      this.areBoardPiecesIconsDifferent()
-    ) {
-      await this.waitToHideBoardPieces();
+    if (!this.wereTwoBoardPiecesSelected()) return;
+
+    if (this.areBoardPiecesIconsDifferent()) {
+      await this.waitToHideBoardPieces(this.coupleOfSelectedBoardPieces);
+    } else {
+      this.incrementNumberOfRightCouples();
     }
   }
 
-  waitToHideBoardPieces() {
+  incrementNumberOfRightCouples() {
+    this.rightCouplesCount += 1;
+  }
+
+  showCongratulationsToast() {
+    if (this.rightCouplesCount !== this.RIGHT_COUPLES_LIMIT) {
+      return;
+    }
+
+    const congratulationsToast = new ShowToastEvent({
+      title: "Congratulations!",
+      message: "You got all icons couples right!",
+      variant: "success"
+    });
+
+    document.dispatchEvent(congratulationsToast);
+  }
+
+  waitToHideBoardPieces(boardPiecesToHide) {
     this.isBoardPieceCoupleTurnedUp = true;
 
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.hideBoardPieces();
+        this.hideBoardPieces(boardPiecesToHide);
 
         this.isBoardPieceCoupleTurnedUp = false;
 
@@ -126,15 +153,28 @@ export default class MemoryGame extends LightningElement {
     boardPiece.classList.remove("hide-piece");
   }
 
-  hideBoardPieces() {
-    this.coupleOfSelectedBoardPieces.forEach((boardPiece) =>
+  hideBoardPieces(boardPiecesToHide) {
+    boardPiecesToHide.forEach((boardPiece) =>
       boardPiece.classList.add("hide-piece")
     );
   }
 
-  cleanSelectedBoardPieces() {
+  cleanCoupleBoardPieces() {
     if (this.wereTwoBoardPiecesSelected()) {
-      this.coupleOfSelectedBoardPieces = [];
+      this.cleanAllSelectedBoardPieces();
     }
+  }
+
+  resetBoard() {
+    const allBoardPieces = this.template.querySelectorAll("li");
+
+    this.hideBoardPieces(allBoardPieces);
+    this.cleanAllSelectedBoardPieces();
+    
+    this.rightCouplesCount = 0;
+  }
+
+  cleanAllSelectedBoardPieces() {
+    this.coupleOfSelectedBoardPieces = [];
   }
 }

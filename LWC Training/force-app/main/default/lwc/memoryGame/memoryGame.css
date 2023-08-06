@@ -1,14 +1,18 @@
 :host {
   --board-piece-size: 60px;
   --icon-size: calc(var(--board-piece-size) - 35px);
+  --color-grey-1: rgb(41, 41, 41);
 
+  align-items: center;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
   justify-content: center;
   width: 100%;
 }
 
 .board {
-  background-color: rgb(41, 41, 41);
+  background-color: var(--color-grey-1);
   border-radius: 10px;
 
   display: grid;
@@ -38,4 +42,14 @@
 
 .hide-piece > i {
   display: none;
+}
+
+.reset-button {
+  background-color: var(--color-grey-1);
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  padding: 10px 20px;
 }
