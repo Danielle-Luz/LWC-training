@@ -1,0 +1,41 @@
+:host {
+  --board-piece-size: 60px;
+  --icon-size: calc(var(--board-piece-size) - 35px);
+
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.board {
+  background-color: rgb(41, 41, 41);
+  border-radius: 10px;
+
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, var(--board-piece-size));
+  grid-template-rows: repeat(4, var(--board-piece-size));
+
+  padding: 20px;
+}
+
+.board-piece {
+  background-color: #ffd700;
+  border-radius: 8px;
+  font-size: var(--icon-size);
+
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  height: 100%;
+  width: 100%;
+}
+
+.hide-piece {
+    background-color: #00CED1;
+}
+
+.hide-piece > i {
+    display: none;
+}
