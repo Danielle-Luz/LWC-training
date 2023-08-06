@@ -15,8 +15,8 @@ export default class MemoryGame extends LightningElement {
     "fa-solid fa-camera-retro"
   ];
 
-  @track
   coupleOfSelectedBoardPieces = [];
+  isBoardPieceCoupleTurnedUp = false;
 
   connectedCallback() {
     this.loadLibraries();
@@ -57,12 +57,14 @@ export default class MemoryGame extends LightningElement {
   }
 
   async handleBoardPieceClick(event) {
+    if (this.isBoardPieceCoupleTurnedUp) {
+      return;
+    }
+
     const boardPiece = event.target;
 
     this.addSelectedBoardPiece(boardPiece);
-
     await this.compareSelectedBoardPieces();
-
     this.cleanSelectedBoardPieces();
   }
 
@@ -76,9 +78,14 @@ export default class MemoryGame extends LightningElement {
   }
 
   waitToHideBoardPieces() {
+    this.isBoardPieceCoupleTurnedUp = true;
+
     return new Promise((resolve) => {
       setTimeout(() => {
         this.hideBoardPieces();
+
+        this.isBoardPieceCoupleTurnedUp = false;
+
         resolve();
       }, 2000);
     });
