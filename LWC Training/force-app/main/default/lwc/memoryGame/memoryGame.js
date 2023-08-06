@@ -15,6 +15,9 @@ export default class MemoryGame extends LightningElement {
     "fa-solid fa-camera-retro"
   ];
 
+  @track
+  coupleOfSelectedBoardPieces = [];
+
   connectedCallback() {
     this.loadLibraries();
     this.shuffleboardIcons();
@@ -23,10 +26,9 @@ export default class MemoryGame extends LightningElement {
   loadLibraries() {
     const fontAwesomeLocation =
       fontAwesomeLibrary + "/fontawesome-free-6.4.2-web/css/all.min.css";
-    console.log(fontAwesomeLocation);
-    Promise.all([loadStyle(this, fontAwesomeLocation)])
-      .then(() => console.log("Libraries loaded"))
-      .catch((error) => console.error(error));
+    Promise.all([loadStyle(this, fontAwesomeLocation)]).catch((error) =>
+      console.error(error)
+    );
   }
 
   shuffleboardIcons() {
@@ -52,5 +54,80 @@ export default class MemoryGame extends LightningElement {
     const randomIndex = Math.floor(randomNumber * randomIndexLimit);
 
     return randomIndex;
+  }
+
+  async handleBoardPieceClick(event) {
+    const boardPiece = event.target;
+
+    this.addSelectedBoardPiece(boardPiece);
+
+    await this.compareSelectedBoardPieces();
+
+    this.cleanSelectedBoardPieces();
+  }
+
+  async compareSelectedBoardPieces() {
+    if (
+      this.wereTwoBoardPiecesSelected() &&
+      this.areBoardPiecesIconsDifferent()
+    ) {
+      await this.waitToHideBoardPieces();
+    }
+  }
+
+  waitToHideBoardPieces() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.hideBoardPieces();
+        resolve();
+      }, 2000);
+    });
+  }
+
+  wereTwoBoardPiecesSelected() {
+    return this.coupleOfSelectedBoardPieces.length === 2;
+  }
+
+  areBoardPiecesIconsDifferent() {
+    const boardPiecesIcons = this.getBoardPiecesIcons();
+    const firstIcon = boardPiecesIcons[0];
+    const secondIcon = boardPiecesIcons[1];
+
+    return firstIcon.className !== secondIcon.className;
+  }
+
+  getBoardPiecesIcons() {
+    return this.coupleOfSelectedBoardPieces.map((boardPiece) =>
+      boardPiece.querySelector("i")
+    );
+  }
+
+  addSelectedBoardPiece(boardPiece) {
+    if (this.wasBoardPieceAlreadyAdded(boardPiece)) return;
+
+    if (!this.wereTwoBoardPiecesSelected()) {
+      this.coupleOfSelectedBoardPieces.push(boardPiece);
+      this.showBoardPiece(boardPiece);
+    }
+  }
+
+  wasBoardPieceAlreadyAdded(boardPiece) {
+    return this.coupleOfSelectedBoardPieces.includes(boardPiece);
+  }
+
+  showBoardPiece(boardPiece) {
+    boardPiece.classList.remove("hide-piece");
+  }
+
+  hideBoardPieces() {
+    this.coupleOfSelectedBoardPieces.forEach((boardPiece) =>
+      boardPiece.classList.add("hide-piece")
+    );
+  }
+
+  cleanSelectedBoardPieces() {
+    if (this.wereTwoBoardPiecesSelected()) {
+      this.coupleOfSelectedBoardPieces = [];
+    }
   }
 }

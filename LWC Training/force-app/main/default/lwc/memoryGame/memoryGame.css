@@ -33,9 +33,9 @@
 }
 
 .hide-piece {
-    background-color: #00CED1;
+  background-color: #00ced1;
 }
 
 .hide-piece > i {
-    display: none;
+  display: none;
 }
