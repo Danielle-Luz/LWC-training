@@ -1,7 +1,7 @@
 <template>
     <ul class="board">
         <template for:each={boardIcons} for:item="icon">
-            <li key={icon} class="board-piece">
+            <li key={icon} class="board-piece hide-piece">
                 <i class={icon}></i>
             </li>
         </template>
