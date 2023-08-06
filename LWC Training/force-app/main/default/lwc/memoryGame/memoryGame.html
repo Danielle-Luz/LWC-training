@@ -1,3 +1,9 @@
 <template>
-    
+    <ul class="board">
+        <template for:each={boardIcons} for:item="icon">
+            <li key={icon} class="board-piece">
+                <i class={icon}></i>
+            </li>
+        </template>
+    </ul>
 </template>
